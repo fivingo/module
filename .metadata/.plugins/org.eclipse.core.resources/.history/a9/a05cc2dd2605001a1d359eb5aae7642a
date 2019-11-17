@@ -1,0 +1,12 @@
+package gis.model;
+
+public class GISDTO {
+	private int idx;
+	private String xCoord;
+	private String yCoord;
+	private String address;
+	private String uName;
+	private String uGroup;
+	
+	
+}

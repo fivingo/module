@@ -1,0 +1,28 @@
+package creation.action;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import controller.CommandHandler;
+import creation.model.UrlDTO;
+
+public class CreateURL implements CommandHandler {
+	@Override
+	public String process(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String boardId = req.getParameter("boardId");
+		String url = req.getParameter("url");
+		String userId = req.getParameter("userId");
+		
+		String shortURL = url.substring(0, url.lastIndexOf("/"));
+		
+		System.out.println(url);
+		System.out.println(shortURL);
+		
+		UrlDTO dto = new UrlDTO(bod_idx, url, shortURL, cr_ID);
+		
+		return "creationPopup.jsp";
+	}
+}

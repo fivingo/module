@@ -1,0 +1,7 @@
+package creation.action;
+
+import controller.CommandHandler;
+
+public class CreateURL implements CommandHandler {
+
+}

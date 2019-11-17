@@ -1,0 +1,14 @@
+package day01;
+
+import java.util.Random;
+
+public class Test01 {
+	public static void main(String[] args) {
+		Random random1 = new Random();
+		int dice1 = random1.nextInt(6) + 1;
+		
+		System.out.println(dice1);
+		Random random2 = new Random();
+		Random random3 = new Random();
+	}
+}

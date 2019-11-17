@@ -1,0 +1,71 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<% 
+String url = request.getParameter("url").replace("localhost", "192.168.0.217");
+String boardId = request.getParameter("boardId");
+String userId = request.getParameter("userId");
+String QRcode = (String) request.getAttribute("QRcode");
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>QR 코드 / 단축 URL 생성</title>
+<style type="text/css">
+table {
+	border: 2px;
+	magin: auto;
+	width: 880px;
+	height: 350px;
+	border-spacing: 0px;
+}
+td {
+	border: 1px solid gray;
+	width: 440px;
+}
+</style>
+</head>
+<script>
+
+</script>
+<body>
+<section>
+<article>
+<div>추출 URL: <%= url %></div><br>
+<table>
+<tr>
+<td style="text-align: center">
+<%
+if (QRcode == null || QRcode.equals("")) {
+%>
+	<br><br><br><br><br><br><br><br><br><br>
+<%
+} else {
+%>	
+	<img src="QRcode/QRcode_<%= boardId %>.png" alt="QR코오드" width="200" height="200"><br>
+<%
+}
+%>
+<input type="button" value="QR 코드 생성" onclick="location.href='createQR.do?url=<%= url %>&boardId=<%= boardId %>&userId=<%= userId %>'">
+<%
+if (QRcode == null || QRcode.equals("")) {
+%>
+	<a href="#"><input type="button" value="다운로드"></a>
+<%
+} else {
+%>	
+	<a href="/QRcode/QRcode_<%= boardId %>.png" download><input type="button" value="다운로드"></a>
+<%
+}
+%>
+</td>
+<td text-aling="left">
+<input type="button" value="단축 URL 생성"><br>
+<input type="text" width=""><input type="button" value="복사">
+</td>
+</tr>
+</table>
+</article>
+</section>
+</body>
+</html>

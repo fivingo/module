@@ -1,0 +1,31 @@
+package day01;
+
+import java.util.Random;
+
+public class Test01 {
+	public static void main(String[] args) {
+		for (int i = 1; i < 6; i++) {
+			for (int j = 1; j < 6; j++) {
+				for (int k = 1; k < 6; k++) {
+					if (((i * j * k) % 3) == 0) {
+						
+					}
+				}
+			}
+		}
+		
+//		Random random1 = new Random();
+//		int dice1 = random1.nextInt(6) + 1;
+//		
+//		Random random2 = new Random();
+//		int dice2 = random1.nextInt(6) + 1;
+//		
+//		Random random3 = new Random();
+//		int dice3 = random1.nextInt(6) + 1;
+//		
+//		
+//		if (((dice1 * dice2 * dice3) % 3) == 0) {
+//			System.out.println(dice1 + " * " + dice2 + " * " + dice3 + " = " + dice1 * dice2 * dice3);
+//		}
+	}
+}

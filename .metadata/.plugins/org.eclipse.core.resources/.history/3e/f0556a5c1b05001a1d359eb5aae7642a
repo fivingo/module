@@ -1,0 +1,9 @@
+package test;
+
+import org.json.simple.JSONObject;	// JSON객체를 만드는데 사용
+import org.json.simple.parser.JSONParser;	// JSON객체를 파싱해오는데 사용
+import org.json.simple.parser.ParseException;;	// 예외처리
+
+public class JsonTest {
+	String json;	// JSON객체를 전달해 주기 위한 String
+}

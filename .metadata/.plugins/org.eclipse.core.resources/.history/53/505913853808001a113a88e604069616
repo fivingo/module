@@ -1,0 +1,52 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+request.setCharacterEncoding("UTF-8");
+
+String xCoord = (String) request.getAttribute("xCoord");
+String yCoord = (String) request.getAttribute("yCoord");
+String address = (String) request.getAttribute("address");
+String uName = (String) request.getAttribute("uName");
+String uGroup = (String) request.getAttribute("uGroup");
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+table {
+	width: 100%
+}
+td {
+	text-align: center;
+	border: solid gray;
+}
+</style>
+</head>
+<body>
+<h1>디테일</h1>
+<%= xCoord %><br>
+<%= yCoord %><br>
+<div id="map" style="width: 100%; height: 500px;"></div>
+	<script type="text/javascript"
+		src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f496918795329413c6978c7f4225a5e4"></script>
+	<script>
+	</div>
+<section>
+<article>
+<table>
+	<tr>
+	<td>그룹</td><td><%= uGroup %></td>
+	</tr>
+	<tr>
+	<td>이름</td><td><%= uName %></td>
+	</tr>
+	<tr>
+	<td>주소</td><td><%= address %></td>
+	</tr>
+</table>
+</article>
+</section>
+</body>
+</html>

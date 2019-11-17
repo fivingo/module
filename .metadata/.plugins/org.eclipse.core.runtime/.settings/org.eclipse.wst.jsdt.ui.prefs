@@ -1,0 +1,35 @@
+content_assist_lru_history=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><history maxLHS\="100" maxRHS\="10"/>
+eclipse.preferences.version=1
+fontPropagated=true
+hoverModifierMasks=org.eclipse.wst.jsdt.ui.BestMatchHover;0;org.eclipse.wst.jsdt.debug.ui.variable.value.hover;0;org.eclipse.wst.jsdt.ui.ProblemHover;0;org.eclipse.wst.jsdt.ui.NLS;0;org.eclipse.wst.jsdt.ui.JavadocHover;0;org.eclipse.wst.jsdt.ui.JavaSourceHover;131072;
+hoverModifiers=org.eclipse.wst.jsdt.ui.BestMatchHover;\!0;org.eclipse.wst.jsdt.debug.ui.variable.value.hover;\!0;org.eclipse.wst.jsdt.ui.ProblemHover;\!0;org.eclipse.wst.jsdt.ui.NLS;\!0;org.eclipse.wst.jsdt.ui.JavadocHover;\!0;org.eclipse.wst.jsdt.ui.JavaSourceHover;Shift;
+java_bracket=232,226,183
+java_comment_task_tag=255,139,255
+java_default=238,238,238
+java_doc_default=125,140,147
+java_doc_keyword=160,130,189
+java_doc_link=103,140,177
+java_doc_tag=224,226,228
+java_keyword=147,199,99
+java_keyword_return=147,199,99
+java_multi_line_comment=125,140,147
+java_operator=232,226,183
+java_single_line_comment=125,140,147
+java_string=236,118,0
+org.eclipse.jface.textfont=1|Liberation Mono|13.0|0|WINDOWS|1|0|0|0|0|0|0|0|0|1|0|0|0|0|Liberation Mono;
+org.eclipse.wst.jsdt.ui.editor.tab.width=
+org.eclipse.wst.jsdt.ui.formatterprofiles.version=11
+org.eclipse.wst.jsdt.ui.javadoclocations.migrated=true
+org.eclipse.wst.jsdt.ui.text.code_templates_migrated=true
+org.eclipse.wst.jsdt.ui.text.custom_code_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates/>
+org.eclipse.wst.jsdt.ui.text.custom_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates/>
+org.eclipse.wst.jsdt.ui.text.templates_migrated=true
+proposalOrderMigrated=true
+semanticHighlighting.localVariable.color=224,226,228
+semanticHighlighting.localVariableDeclaration.color=224,226,228
+semanticHighlighting.methodDeclarationName.color=232,226,183
+semanticHighlighting.methodDeclarationName.enabled=true
+tabWidthPropagated=true
+tagName=103,140,177
+useAnnotationsPrefPage=true
+useQuickDiffPrefPage=true

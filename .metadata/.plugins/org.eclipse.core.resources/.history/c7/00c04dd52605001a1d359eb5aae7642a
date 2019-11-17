@@ -1,0 +1,5 @@
+package gis.model;
+
+public class GISDTO {
+	
+}

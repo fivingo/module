@@ -1,0 +1,23 @@
+package test;
+
+import org.json.simple.JSONObject;	// JSON객체를 만드는데 사용
+import org.json.simple.parser.JSONParser;	// JSON객체를 파싱해오는데 사용
+import org.json.simple.parser.ParseException;;	// 예외처리
+
+public class JSONTest {
+	public static void main(String[] args) {
+		
+	}
+	String json;	// JSON객체를 전달해 주기 위한 String
+	void jsonadd() {
+		JSONObject inner = new JSONObject();	// 내부
+		inner.put("professor", "김교수");
+		inner.put("student", "이학생");
+		
+		JSONObject outer = new JSONObject();
+		outer.put("univ", inner);
+		
+		json = outer.toJSONString();
+		System.out.println(json);
+	}
+}

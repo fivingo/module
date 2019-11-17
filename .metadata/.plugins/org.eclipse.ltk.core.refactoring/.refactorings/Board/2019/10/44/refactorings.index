@@ -1,0 +1,41 @@
+1572225733913	Delete elements
+1572225749473	Delete element
+1572225753319	Delete elements
+1572227749074	Delete element
+1572227757898	Delete element
+1572228833945	Delete element
+1572229534604	Move file
+1572235391648	Rename resource 'memberJoin_fail.jsp'
+1572235398098	Rename resource 'memberJoin_ok.jsp'
+1572235402541	Rename resource 'memberJoin_success.jsp'
+1572239138761	Rename resource 'loginFail.jsp'
+1572239438998	Move compilation units
+1572239466638	Move compilation units
+1572239471044	Delete elements
+1572239629392	Rename type 'Login'
+1572239701988	Rename type 'LoginOk'
+1572239843489	Rename resource 'login.jsp'
+1572239848305	Rename resource 'loginOk.jsp'
+1572239881341	Rename resource 'memberJoinOk.jsp'
+1572249875904	Rename local variable 'titile'
+1572313469637	Rename resource 'updateForm.jsp'
+1572313910274	Rename resource 'update.jsp'
+1572316661002	Rename local variable 'count'
+1572317248292	Rename resource 'updateSucceess.jsp'
+1572327119825	Rename type 'ReWrite'
+1572328459307	Rename resource 'reWrite.jsp'
+1572335026354	Rename local variable 'position'
+1572396964456	Move compilation unit
+1572400765773	Rename local variable 'boardId'
+1572428614680	Rename local variable 'multi'
+1572485697933	Rename local variable 'result'
+1572485772907	Rename local variable 'dto'
+1572485777447	Rename local variable 'listdto'
+1572485783475	Rename local variable 'dao'
+1572500680437	Delete element
+1572502540967	Delete element
+1572511224330	Rename local variable 'realFileName'
+1572511451133	Rename local variable 'filePath'
+1572513628585	Rename local variable 'filename'
+1572513638140	Rename local variable 'orgfilename'
+1572514505952	Delete element

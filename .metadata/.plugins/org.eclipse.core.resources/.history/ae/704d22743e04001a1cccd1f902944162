@@ -1,0 +1,63 @@
+package creation.model;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Random;
+
+public class UrlDAO {
+	private Connection conn;
+	private PreparedStatement ps;
+	private ResultSet rs;
+	public static final int ERROR = -1;
+	
+	public String setShortURL(UrlDTO dto) {
+		try {
+			conn = dbcp.Dbcp.getConn();
+			String sql = "SELECT COUNT(*) FROM t_shortUrl WHERE sh_URL = ?";
+			ps = conn.prepareStatement(sql);
+			
+			String url = randomSb();
+			ps.setString(1, url);
+			rs = ps.executeQuery();
+			
+			rs.next();
+			int count = rs.getInt(1);
+			if (count > 0) {
+				
+			} else {
+				sql = "INSERT INTO t_shortUrl (bod_idx, or_URL, sh_URL, cr_ID) VALUE";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				
+			} catch (Exception e2) {}
+		}
+	}
+	
+	// 무작위 문자열 생성 관련 메서드
+	public String randomSb() {
+		String str = null;
+		Random random = new Random();
+		for (int i = 0; i < 3; i++) {
+			int rIndex = random.nextInt(3);
+			if (rIndex == 0) {
+				// a-z
+				str = str + (char) (random.nextInt(26) + 97);
+				break;
+			} else if (rIndex == 1) {
+				// A-Z
+				str = str + (char) (random.nextInt(26) + 65);
+				break;
+			} else if (rIndex == 2) {
+				// 0-9
+				str = str + (random.nextInt(10));
+				break;
+			}
+		}
+		System.out.println(str);
+		return str;
+	}
+}

@@ -1,0 +1,57 @@
+package gis.model;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+import gis.model.GISDTO;
+
+public class GISDAO {
+	private Connection conn;
+	private PreparedStatement ps;
+	private ResultSet rs;
+	public static final int ERROR = -1;
+	
+	// 게시물 목록 관련 메서드
+		public ArrayList<GISDTO> list(int cPage, int listSize) {
+			try {
+				conn = dbcp.Dbcp.getConn();
+				int startNumber = (cPage - 1) * listSize + 1;
+				int endNumer = cPage * listSize;
+//				String sql = "SELECT * FROM board ORDER BY boardId DESC";
+				String sql = "SELECT * FROM (SELECT ROWNUM AS rnum, a.* FROM "
+					+ "(SELECT * FROM gis ORDER BY ref DESC, position ASC) a) b "
+					+ "WHERE rnum >= ? and rnum <= ?";
+				ps = conn.prepareStatement(sql)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ;
+				ps.setInt(1, startNumber);
+				ps.setInt(2, endNumer);
+				rs = ps.executeQuery();
+				
+				ArrayList<GISDTO> arr = new ArrayList<GISDTO>();
+				
+				while (rs.next()) {
+					int idx = rs.getInt("idx");
+					String xCoord = rs.getString("xCoord");
+					String yCoord = rs.getString("yCoord");
+					String address = rs.getString("address");
+					String uName = rs.getString("uName");
+					String uGroup = rs.getString("uGroup");
+					
+					GISDTO dto = new GISDTO(idx, xCoord, yCoord, address, uName, uGroup);
+					arr.add(dto);
+				}
+				return arr;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			} finally {
+				try {
+					if (rs != null) rs.close();
+					if (ps != null) ps.close();
+					if (conn != null) conn.close();
+				} catch (Exception e2) {}
+			}
+		}
+}

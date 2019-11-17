@@ -1,0 +1,29 @@
+{
+	"type":"FeatureCollection",
+	"crs":{
+		"type":"name",
+		"properties":{
+			"name":"urn:ogc:def:crs:OGC:1.3:CRS84"
+		}
+	},
+	"features":[
+		{
+			"type":"Feature",
+			"geometry":{
+				"type":"Polygon",
+				"coordinates":[
+					[
+						126.98419895293965,
+						37.6363374548455
+					]
+				]
+			},
+			"properties":{
+				"CTPRVN_CD":"11",
+				"CTP_ENG_NM":"Seoul",
+				"CTP_KOR_NM":"서울",
+				"orig_ogc_fid":0
+			}
+		}
+	]
+}

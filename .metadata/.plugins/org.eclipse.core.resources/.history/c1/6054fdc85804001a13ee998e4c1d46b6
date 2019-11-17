@@ -1,0 +1,36 @@
+package controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+//import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+//@WebServlet("/u/*")	// web.xml에서 매핑하던지 둘중하나만
+public class ShortUrl extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	
+    public ShortUrl() {
+        super();
+    }
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//		response.getWriter().append("Served at: ").append(request.getContextPath());
+		response.setContentType("text/html; charset=UTF-8");
+	    
+		String uri = request.getRequestURI();
+		String url = uri.substring(uri.lastIndexOf("/u/"));
+		System.out.println(uri);
+		System.out.println(url);
+		
+	    PrintWriter out = response.getWriter();
+	    out.println("<h1>하이</h1>");
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+}

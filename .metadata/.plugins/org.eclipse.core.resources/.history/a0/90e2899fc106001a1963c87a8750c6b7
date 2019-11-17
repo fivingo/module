@@ -1,0 +1,640 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="java.util.*"%>
+<%@ page import="gis.model.*" %>
+<jsp:useBean id="dao" class="gis.model.GISDAO" scope="session"/>
+<%
+// 검색 파라미터값 얻기
+String searchText = request.getParameter("searchText");
+if (searchText == null) searchText = "";
+
+// 1. 총 게시물 수
+int totalCount = dao.getTotalCount();
+// 검색된 총 게시물 수
+if (searchText != null) {
+	totalCount = dao.getTotalCount_search(searchText);
+}
+
+// 2,3. 보여줄 리스트 수, 페이지 블록 크기 (임의지정가능)
+int listSize = 3;
+int pageBlockSize = 3;
+
+// 4. 사용자의 현재 위치 (선택한 페이지)
+String cPage_s = request.getParameter("cPage");
+if (cPage_s == null || cPage_s.equals("")) {
+	cPage_s = "1";
+}
+int cPage = Integer.parseInt(cPage_s);
+
+// 총 페이지 수
+int totalPage = (totalCount / listSize) + 1;
+if (totalCount % listSize == 0) {
+	totalPage --;
+}
+
+// 4-1. 그룹화
+int userGroup = cPage / pageBlockSize;
+if (cPage % pageBlockSize == 0) {
+	userGroup--;
+}
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GIS TEST</title>
+<script>
+	///// JSON 파일 읽기
+	var xhr= new XMLHttpRequest();
+	var target= "temp.json";	// JSON 파일
+	
+	xhr.open("GET", target);
+	xhr.send();
+	
+	var data;
+	xhr.onreadystatechange = function(){
+		if(xhr.readyState == 4 && xhr.status == 200) {
+			data = xhr.responseText;
+			//data = eval('('+data+')');	// text를 object로 변환 1
+			data = JSON.parse(data);		// text를 object로 변환 2 (JSON 전용)
+		}
+	}
+</script>
+<style>
+img {
+	width: 70px;
+}
+table {
+	width: 100%
+}
+td {
+	text-align: center;
+	border: 1px solid gray;
+}
+</style>
+</head>
+<body>
+<section>
+<article>
+	<%-- 체크박스 --%>
+	<div>
+		<input type="checkbox" id="red" name="pin" checked="checked" onclick="marker_red();"><img src="Image/pin_spot_red.png">직장
+		<input type="checkbox" id="yellow" name="pin" checked="checked" onclick="marker_yellow();"><img src="Image/pin_spot_yellow.png">친구
+		<input type="checkbox" id="blue" name="pin" checked="checked" onclick="marker_blue();"><img src="Image/pin_spot_blue.png">가족
+		<input type="checkbox" id="kakao" name="pin" checked="checked" onclick="marker_kakao();"><img src="Image/pin_spot_kakao.png">기타
+		<input type="checkbox" id="polygon" name="pin" checked="checked" onclick="polygon_check();"><img src="Image/polygon.png">폴리곤
+	</div>
+	<%-- 맵 표시부분 --%>
+	<div id="map" style="width: 100%; height: 500px;"></div>
+	<script type="text/javascript"
+		src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f496918795329413c6978c7f4225a5e4"></script>
+	<script>
+		/* 기본 지도 생성 */
+		// 지도를 담을 영역의 DOM 레퍼런스
+		var container = document.getElementById('map');
+		// 지도를 생성할 때 필요한 기본 옵션
+		var options = {
+			center: new kakao.maps.LatLng(37.565504, 126.999999),
+			level: 9	// 지도의 레벨
+		};
+		
+		// 지도 생성 및 객체 리턴
+		var map = new kakao.maps.Map(container, options);
+		
+		/////////////////////////////////////////////////////////////
+		
+		// 체크박스 체크여부 확인
+		var pin_red = document.getElementById("red").checked;
+		var pin_yellow = document.getElementById("yellow").checked;
+		var pin_blue = document.getElementById("blue").checked;
+		var pin_kakao = document.getElementById("kakao").checked;
+		var polygon = document.getElementById("polygon").checked;
+		
+		var markers_red = [];		// 마커 객체를 담을 배열
+		var markers_yellow = [];	// 마커 객체를 담을 배열
+		var markers_blue = [];		// 마커 객체를 담을 배열
+		var markers_kakao = [];		// 마커 객체를 담을 배열
+		var opendInfowindow = null;	// 열린 인포윈도우를 담을 변수
+		<%
+		// DB에서 마커 정보 가져오기
+		ArrayList<GISDTO> markerArr = dao.getMarkerInfo();
+		for (int i = 0; i < markerArr.size(); i++) {
+			String group = markerArr.get(i).getuGroup();
+			
+			// 마커 생성 - 직장(red)
+			if (group.equals("company")) {
+			%>
+				// 마커의 좌표
+				var position = new kakao.maps.LatLng(<%= markerArr.get(i).getxCoord() %>, <%= markerArr.get(i).getyCoord() %>);
+				// 마커 이미지의 이미지 주소
+				var imageSrc = "Image/pin_spot_red.png"; 
+			    // 마커 이미지 크기
+			    var imageSize = new kakao.maps.Size(25, 36); 
+			    // 마커 이미지 생성 
+			    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); 
+			    
+			    // 마커 생성
+			   	var marker = new kakao.maps.Marker({
+			        map: map, // 마커를 표시할 지도
+			        position: position, // 마커를 표시할 위치
+			        image: markerImage // 마커 이미지 
+			    });
+				
+			    // 생성된 체크박스용 마커 배열에 추가
+			    markers_red.push(marker);
+			    
+				// 마커 지도에 표시
+			    marker.setMap(map);
+				
+		    	// 마커 위에 표시할 인포윈도우 생성
+		    	var content = '<form name="infowindow" action="detail.do" method="post">';
+		    	content = content + '<div style="padding:5px; width:190px; height:115px;">';
+		    	content = content + '<input type="hidden" name="address" value="<%= markerArr.get(i).getAddress() %>">';
+		    	content = content + '<input type="hidden" name="uName" value="<%= markerArr.get(i).getuName() %>">';
+		    	content = content + '<input type="hidden" name="uGroup" value="<%= markerArr.get(i).getuGroup() %>">';
+		    	content = content + '주소:<%= markerArr.get(i).getAddress() %><br>';
+		    	content = content + '이름:<%= markerArr.get(i).getuName() %><br>';
+		    	content = content + '그룹:<%= markerArr.get(i).getuGroup() %><br>';
+		    	content = content + '<input type="submit" value="상세보기">';
+		    	content = content + '</div>';
+		    	content = content + '<form>';
+			    var infowindow = new kakao.maps.InfoWindow({
+			    	position: position,
+			        content: content
+			    });
+		    	
+			    // 마커에 클릭 이벤트 등록 (우클릭: rightclick)
+				kakao.maps.event.addListener(marker, 'click', makeClickListener(map, marker, infowindow));
+			<%
+			// 마커 생성 - 친구(yellow)
+			} else if (group.equals("friend")) {
+			%>
+				// 마커의 좌표
+				var position = new kakao.maps.LatLng(<%= markerArr.get(i).getxCoord() %>, <%= markerArr.get(i).getyCoord() %>);
+				// 마커 이미지의 이미지 주소
+				var imageSrc = "Image/pin_spot_yellow.png"; 
+			    // 마커 이미지 크기
+			    var imageSize = new kakao.maps.Size(25, 36); 
+			    // 마커 이미지 생성 
+			    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); 
+			    
+			    // 마커 생성
+			   	var marker = new kakao.maps.Marker({
+			        map: map, // 마커를 표시할 지도
+			        position: position, // 마커를 표시할 위치
+			        image: markerImage // 마커 이미지 
+			    });
+				
+			    // 생성된 체크박스용 마커 배열에 추가
+			    markers_yellow.push(marker);
+			    
+				// 마커 지도에 표시
+			    marker.setMap(map);
+			    
+			 	// 마커 위에 표시할 인포윈도우 생성
+		    	var content = '<form name="infowindow" action="infoWindow.do" method="post">';
+		    	content = content + '<div style="padding:5px; width:190px; height:115px;">';
+		    	content = content + '<input type="hidden" name="address" value="<%= markerArr.get(i).getAddress() %>">';
+		    	content = content + '<input type="hidden" name="uName" value="<%= markerArr.get(i).getuName() %>">';
+		    	content = content + '<input type="hidden" name="uGroup" value="<%= markerArr.get(i).getuGroup() %>">';
+		    	content = content + '주소:<%= markerArr.get(i).getAddress() %><br>';
+		    	content = content + '이름:<%= markerArr.get(i).getuName() %><br>';
+		    	content = content + '그룹:<%= markerArr.get(i).getuGroup() %><br>';
+		    	content = content + '<input type="submit" value="상세보기">';
+		    	content = content + '</div>';
+		    	content = content + '<form>';
+			    var infowindow = new kakao.maps.InfoWindow({
+			    	position: position,
+			        content: content
+			    });
+		    	
+			    // 마커에 클릭 이벤트 등록 (우클릭: rightclick)
+				kakao.maps.event.addListener(marker, 'click', makeClickListener(map, marker, infowindow));
+			<%
+			// 마커 생성 - 가족(blue)
+			} else if (group.equals("family")) {
+			%>
+				// 마커의 좌표
+				var position = new kakao.maps.LatLng(<%= markerArr.get(i).getxCoord() %>, <%= markerArr.get(i).getyCoord() %>);
+				// 마커 이미지의 이미지 주소
+				var imageSrc = "Image/pin_spot_blue.png"; 
+			    // 마커 이미지 크기
+			    var imageSize = new kakao.maps.Size(25, 36); 
+			    // 마커 이미지 생성 
+			    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); 
+			    
+			    // 마커 생성
+			   	var marker = new kakao.maps.Marker({
+			        map: map, // 마커를 표시할 지도
+			        position: position, // 마커를 표시할 위치
+			        image: markerImage // 마커 이미지 
+			    });
+				
+			    // 생성된 체크박스용 마커 배열에 추가
+			    markers_blue.push(marker);
+			    
+				// 마커 지도에 표시
+			    marker.setMap(map);
+			    
+				// 마커 위에 표시할 인포윈도우 생성
+		    	var content = '<form name="infowindow" action="infoWindow.do" method="post">';
+		    	content = content + '<div style="padding:5px; width:190px; height:115px;">';
+		    	content = content + '<input type="hidden" name="address" value="<%= markerArr.get(i).getAddress() %>">';
+		    	content = content + '<input type="hidden" name="uName" value="<%= markerArr.get(i).getuName() %>">';
+		    	content = content + '<input type="hidden" name="uGroup" value="<%= markerArr.get(i).getuGroup() %>">';
+		    	content = content + '주소:<%= markerArr.get(i).getAddress() %><br>';
+		    	content = content + '이름:<%= markerArr.get(i).getuName() %><br>';
+		    	content = content + '그룹:<%= markerArr.get(i).getuGroup() %><br>';
+		    	content = content + '<input type="submit" value="상세보기">';
+		    	content = content + '</div>';
+		    	content = content + '<form>';
+			    var infowindow = new kakao.maps.InfoWindow({
+			    	position: position,
+			        content: content
+			    });
+		    	
+			    // 마커에 클릭 이벤트 등록 (우클릭: rightclick)
+				kakao.maps.event.addListener(marker, 'click', makeClickListener(map, marker, infowindow));
+			<%
+			// 마커 생성 - 기타(guitar)
+			} else if (group.equals("etc")) {
+			%>
+				// 마커의 좌표
+				var position = new kakao.maps.LatLng(<%= markerArr.get(i).getxCoord() %>, <%= markerArr.get(i).getyCoord() %>);
+				// 마커 이미지의 이미지 주소
+				var imageSrc = "Image/pin_spot_kakao.png"; 
+			    // 마커 이미지 크기
+			    var imageSize = new kakao.maps.Size(25, 36); 
+			    // 마커 이미지 생성 
+			    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); 
+			    
+			    // 마커 생성
+			   	var marker = new kakao.maps.Marker({
+			        map: map, // 마커를 표시할 지도
+			        position: position, // 마커를 표시할 위치
+			        image: markerImage // 마커 이미지 
+			    });
+				
+			    // 생성된 체크박스용 마커 배열에 추가
+			    markers_kakao.push(marker);
+			    
+				// 마커 지도에 표시
+			    marker.setMap(map);
+			    
+		 		// 마커 위에 표시할 인포윈도우 생성
+		    	var content = '<form name="infowindow" action="infoWindow.do" method="post">';
+		    	content = content + '<div style="padding:5px; width:190px; height:115px;">';
+		    	content = content + '<input type="hidden" name="address" value="<%= markerArr.get(i).getAddress() %>">';
+		    	content = content + '<input type="hidden" name="uName" value="<%= markerArr.get(i).getuName() %>">';
+		    	content = content + '<input type="hidden" name="uGroup" value="<%= markerArr.get(i).getuGroup() %>">';
+		    	content = content + '주소:<%= markerArr.get(i).getAddress() %><br>';
+		    	content = content + '이름:<%= markerArr.get(i).getuName() %><br>';
+		    	content = content + '그룹:<%= markerArr.get(i).getuGroup() %><br>';
+		    	content = content + '<input type="submit" value="상세보기">';
+		    	content = content + '</div>';
+		    	content = content + '<form>';
+			    var infowindow = new kakao.maps.InfoWindow({
+			    	position: position,
+			        content: content
+			    });
+		    	
+			    // 마커에 클릭 이벤트 등록 (우클릭: rightclick)
+				kakao.maps.event.addListener(marker, 'click', makeClickListener(map, marker, infowindow));
+			<%
+			}
+			%>
+		<%
+		}
+		%>
+		
+		// 인포윈도우를 표시하는 함수
+		function makeClickListener(map, marker, infowindow) {
+		    return function() {
+		    	// 선택된 마커가 있다면 마커와 인포윈도우 닫기
+		    	if (!!marker_click && !!infowindow_click) {
+		    		marker_click.setMap(null);
+		    		infowindow_click.close();
+		    	}
+		    	
+	        	// 열린 인포윈도우가 있고, 새로운 인포윈도우가 열린 인포윈도우가  아니면
+	        	if (!!opendInfowindow || opendInfowindow === infowindow) {
+	        		// 인도윈도우를 닫는다
+		        	opendInfowindow.close();
+	        	}
+	        	
+	        	// 인포윈도우를 표시
+		        infowindow.open(map, marker);
+
+		        // 열린 윈포윈도우를 현재 윈포윈도우객체로 설정합니다
+		        opendInfowindow = infowindow;
+		    };
+		}
+		
+		// 마커_red 체크박스
+		function marker_red() {
+			var red = document.getElementById("red");
+			
+			if (red.checked) {
+				for (var i = 0; i < markers_red.length; i++) {
+					markers_red[i].setMap(map);
+			    }
+			} else {
+				for (var i = 0; i < markers_red.length; i++) {
+					markers_red[i].setMap(null);
+				}
+			}
+		}
+		
+		// 마커_yellow 체크박스
+		function marker_yellow() {
+			var yellow = document.getElementById("yellow");
+			
+			if (yellow.checked) {
+				for (var i = 0; i < markers_yellow.length; i++) {
+					markers_yellow[i].setMap(map);
+			    }
+			} else {
+				for (var i = 0; i < markers_yellow.length; i++) {
+					markers_yellow[i].setMap(null);
+				}
+			}
+		}
+		
+		// 마커_blue 체크박스
+		function marker_blue() {
+			var blue = document.getElementById("blue");
+			
+			if (blue.checked) {
+				for (var i = 0; i < markers_blue.length; i++) {
+					markers_blue[i].setMap(map);
+			    }
+			} else {
+				for (var i = 0; i < markers_blue.length; i++) {
+					markers_blue[i].setMap(null);
+				}
+			}
+		}
+		
+		// 마커_kakao 체크박스
+		function marker_kakao() {
+			var kakao = document.getElementById("kakao");
+			
+			if (kakao.checked) {
+				for (var i = 0; i < markers_kakao.length; i++) {
+					markers_kakao[i].setMap(map);
+			    }
+			} else {
+				for (var i = 0; i < markers_kakao.length; i++) {
+					markers_kakao[i].setMap(null);
+				}
+			}
+		}
+		
+		/////////////////////////////////////////////////////////////
+		
+		/* 폴리곤 */ 
+		// 다각형 객체를 구성할 좌표배열
+		var polygonPath = [];
+		
+		// JSON 파일에서 좌표값 가져오기
+		var features = data.features;
+		for (var i = 0; i < features.length; i++) {
+			var features = features[0];
+			
+			for (var j = 0; j < features.geometry.coordinates.length; j++) {
+				var coordinates = features.geometry.coordinates;
+				polygonPath.push(new kakao.maps.LatLng(coordinates[j][1], coordinates[j][0]));
+			}
+		}
+		
+		// 다각형을 생성하고 지도에 표시
+		var polygon = new kakao.maps.Polygon({
+			map: map,
+		    path: polygonPath,	// 좌표 배열의 배열로 하나의 다각형을 표시할 수 있다
+		    strokeWeight: 5,	// 선 두께
+		    strokeColor: 'black',	// 선 색깔
+		    strokeOpacity: 1	// 선 불투명도 (1~0)
+		});
+		
+		
+		// 폴리곤 체크박스
+		function polygon_check() {
+			var polygon_check = document.getElementById("polygon");
+			
+			if (polygon_check.checked) {
+				// 지도에 다각형 표시
+				polygon.setMap(map);
+			} else {
+				// 지도에 다각형 미표시
+				polygon.setMap(null);
+			}
+		}
+		
+		/////////////////////////////////////////////////////////////
+		
+		/* 클릭위치에 새로운 마커 생성 */
+	    // 마커 생성
+	    var marker_click = new kakao.maps.Marker({});
+		 	
+	 	// 마커 위에 표시할 인포윈도우 생성
+	    var infowindow_click = new kakao.maps.InfoWindow({});
+		
+		// 지도에 클릭 이벤트를 등록하고 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+		kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
+		    // 클릭위치 위도, 경도 정보 추출
+		    var latlng = mouseEvent.latLng; 
+		    
+		    // 추출한 위치정보로 핀 위치 설정
+		    marker_click.setPosition(latlng);
+			
+		 	// 지도에 마커 표시
+		    marker_click.setMap(map);
+			
+		 	// 서울맵 api로 좌표->주소 (JSON)
+			var xhr= new XMLHttpRequest();
+			var target= "https://map.seoul.go.kr/smgis/apps/geocoding.do?cmd=getReverseGeocoding&key=63f2ba02cc0740a3b6c16a5708f94cf6&address_type=S&coord_x=" + latlng.getLng() +  "&coord_y=" + latlng.getLat() + "&req_lang=KOR&res_lang=KOR";
+			
+			xhr.open("GET", target);
+			xhr.send();
+			
+			xhr.onreadystatechange = function(){
+				if(xhr.readyState == 4 && xhr.status == 200) {
+					var data = xhr.responseText;
+					data = JSON.parse(data);
+					
+					var form = '';
+					if (data.body[0] != undefined) {
+						var address = data.body[0].value;
+					    form = '<form name="infowindow" action="infoWindow.do" method="post">';
+						form = form + '<div style="padding:5px; width:190px; height:90px;">';
+						form = form + '<input type="hidden" name="xCoord" value="' + latlng.getLat() + '">';
+						form = form + '<input type="hidden" name="yCoord" value="' + latlng.getLng() + '">';
+						form = form + '<input type="hidden" name="address" value="' + address + '">';
+						form = form + '주소:' + address + '<br>';
+						form = form + '<input type="text" name="uName"><br>';
+						form = form + '<select name="uGroup" style="width:120px; height:25px;">';
+						form = form + '<option value="company">직장</option>';
+						form = form + '<option value="friend">친구</option>';
+						form = form + '<option value="family">가족</option>';
+						form = form + '<option value="etc">기타</option>';
+						form = form + '<input type="submit" value="저장">';
+						form = form + '</div>';
+						form = form + '<form>';
+					} else {
+						form = '주소를 표시할 수 없습니다.';
+					}
+
+				    // 인포윈도우에 표시할 내용
+				 	infowindow_click.setContent(form);
+				 	
+					// 열린 인포윈도우가 있으면
+			    	if (!!opendInfowindow) {
+			    		// 인포윈도우를 닫는다
+			        	opendInfowindow.close();
+			    	}
+					
+					// 지도에 인포윈도우 표시
+					infowindow_click.open(map, marker_click);
+					
+			    	// 열린 윈포윈도우를 현재 윈포윈도우 객체로 설정
+			        opendInfowindow = infowindow_click;
+				}
+			}
+		});
+		
+		
+		
+		
+		/////////////////////////////////////////////////////////////
+		
+		// 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+		var mapTypeControl = new kakao.maps.MapTypeControl();
+		
+		// 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+		// kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+		map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+		
+		// 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+		var zoomControl = new kakao.maps.ZoomControl();
+		map.addControl(zoomControl, kakao.maps.ControlPosition.LEFT);
+	</script>
+	<br>
+	<%-- 검색창 --%>
+	<div>
+		<form name="search" action="index.do" method="post">
+			<input type="text" name="searchText"><input type="submit" value="이름검색">
+		</form>
+	</div>
+	<br>
+	<%-- 데이터 테이블 --%>
+	<table>
+	<thead>
+		<tr>
+		<td width=200>그룹</td>
+		<td width=200>이름</td>
+		<td>주소</td>
+		</tr>
+	</thead>
+	<tfoot>
+		<tr>
+		<td colspan="3">
+		<%
+		// 리스트 DB로부터 받아오기
+		ArrayList<GISDTO> arr = dao.list(cPage, listSize);
+		
+		// 검색된 리스트 DB로부터 받아오기
+		if (searchText != null) {
+			arr = dao.listSearch(cPage, listSize, searchText);
+		}
+		%>
+		<%
+		if (arr != null && arr.size() != 0) {
+			// <<
+			if (userGroup != 0) {
+				if (searchText.equals("")) {
+			%>
+					<a href="index.do?cPage=<%= (userGroup - 1) * pageBlockSize + pageBlockSize %>&searchText=<%= searchText %>">&lt;</a>
+			<%
+				} else {
+			%>
+					<a href="index.do?cPage=<%= (userGroup - 1) * pageBlockSize + pageBlockSize %>">&lt;</a>
+			<%
+				}
+			}
+			%>	
+			<%
+			// 4-2. 그룹화 후 블록 보이기
+			for (int i = (userGroup * pageBlockSize + 1); i <= (userGroup * pageBlockSize + pageBlockSize); i++) {
+				if (searchText != null) {
+					if (cPage == i) {
+					%>
+						&nbsp;[<a href="index.do?cPage=<%= i %>&searchText=<%= searchText %>"><%= i %></a>]&nbsp;
+					<%
+					} else {
+					%>
+						&nbsp;<a href="index.do?cPage=<%= i %>&searchText=<%= searchText %>"><%= i %></a>&nbsp;
+					<%
+					}
+					%>
+			<%
+				} else {
+					if (cPage == i) {
+					%>
+						&nbsp;[<a href="index.do?cPage=<%= i %>"><%= i %></a>]&nbsp;
+					<%
+					} else {
+					%>
+						&nbsp;<a href="index.do?cPage=<%= i %>"><%= i %></a>&nbsp;
+					<%
+					}
+			%>
+			<%
+				}
+				if (i == totalPage) break;
+			}
+			%>
+			<%
+			// >>
+			if (userGroup != (totalPage / pageBlockSize) - (totalPage % pageBlockSize == 0 ? 1 : 0)) {
+				if (searchText.equals("")) {
+			%>
+					<a href="index.do?cPage=<%= (userGroup + 1 ) * pageBlockSize + 1 %>&searchText=<%= searchText %>">&gt;</a>
+			<%
+				} else {
+			%>
+					<a href="index.do?cPage=<%= (userGroup + 1 ) * pageBlockSize + 1 %>">&gt;</a>
+			<%
+				}
+			}
+		}
+		%>
+		</td>
+		</tr>
+	</tfoot>
+	<tbody>
+		<%
+		if (arr == null || arr.size() == 0) {
+		%>
+			<tr>
+			<td colspan="3" align="center">
+			저장된 마커 정보가 없습니다</td>
+			</tr>
+		<%
+		} else {
+			for (int i = 0; i < arr.size(); i++) {
+		%>
+				<tr>
+				<td><%= arr.get(i).getuGroup() %></td>
+				<td><%= arr.get(i).getuName() %></td>
+				<td><a href="#"><%= arr.get(i).getAddress() %></a></td>
+				</tr>
+		<%
+			}
+		}
+		%>
+	</tbody>
+	</table>
+</article>
+</section>
+</body>
+</html>

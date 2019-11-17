@@ -1,0 +1,11 @@
+package day01;
+
+import java.util.Random;
+
+public class Test01 {
+	public static void main(String[] args) {
+		Random dice1 = new Random();
+		Random dice2 = new Random();
+		Random dice3 = new Random();
+	}
+}

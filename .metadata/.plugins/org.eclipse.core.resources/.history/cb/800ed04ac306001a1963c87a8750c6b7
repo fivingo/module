@@ -1,0 +1,3 @@
+/index.do = gis.action.Index
+/infoWindow.do = gis.action.InfoWindow
+/deteil.do = gis.action.Detail

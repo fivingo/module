@@ -1,0 +1,130 @@
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script>
+function update() {
+	location.href='updateForm.do?boardId=126&title=파일테스트2&userId=3&viewCount=1&content=2';
+}
+function delcontent() {
+	location.href='delete.do?boardId=126';
+}
+function commentReply(index){
+	var con = document.getElementById('commentReply' + index);
+	
+	if (con.style.display == 'none') {
+		con.style.display = '';
+	} 
+	/*
+	else if (con.style.display == 'block') {
+		window.alert(con);
+		con style.display = 'none';
+	}
+	*/
+	
+}
+</script>
+<style type="text/css">
+table {
+	border: 2px;
+	magin: auto;
+	text-align: center;
+	width: 600px;
+	border-spacing: 0px;
+}
+td {
+	padding: 10px;
+	/*border: 1px solid gray;*/
+}
+</style>
+</head>
+<body>
+<section>
+<article>
+<form name="write" action="write.do" method="post">
+<table align="center">
+<tr>
+<td colspan="4"><h1>게시물 상세</h1></td>
+</tr>
+<tr>
+<td>제목</td>
+<td colspan="3">
+<input type="text" name="title" value="파일테스트2" style="width:700px" readonly="readonly">
+</td>
+</tr>
+<tr>
+<td>작성자</td>
+<td>
+<input type="text" name="userId" value="3" style="width:315px" readonly="readonly">
+</td>
+<td>조회수</td>
+<td>
+<input type="text" name="viewCount" value="1" style="width:315px" readonly="readonly">
+</td>
+</tr>
+<tr>
+<td>내용</td>
+<td colspan="3"><textarea name="content" rows="20" cols="95" readonly="readonly">2</textarea></td>
+</tr>
+</table>
+</form>
+<!-- 파일리스트 -->
+<table align="center">
+<tr>
+<td width=50>파일</td>
+<td width=850>
+
+	<a href="fileDownload.do?fileName=메모.txt&boardId=126">
+	메모.txt</a>
+
+</td>
+</tr>
+</table>
+<!-- button -->
+<table align="center">
+<tr>
+<td colspan="4">
+	
+		<input type="button" value="수정" onclick="update();">&nbsp;
+		
+			<input type="button" value="삭제" onclick="delcontent();">&nbsp;
+					
+	
+	<input type="button" value="답변" 
+	onclick="location.href='reWriteForm.do?title=파일테스트2&ref=2&step=0&position=0'">
+	<input type="button" value="목록보기" onclick="location.href='list.do'">
+</td>
+</tr>
+</table>
+<!-- 댓글 -->
+<form name="comment" action="comment.do" method="post">
+<table align="center">
+<tr>
+<td colspan="3">
+	<br>
+	<input type="text" name="content_c" style="width:500px">
+	<input type="hidden" name="boardId_c" value="126">
+	<input type="hidden" name="userId_c" value="3">
+</td>
+<td>
+	<input type="submit" value="댓글등록">
+</td>
+</tr>
+</table>
+</form>
+
+</article>
+</section>
+</body>
+</html>
